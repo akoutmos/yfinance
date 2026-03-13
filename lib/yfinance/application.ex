@@ -5,16 +5,19 @@ defmodule Yfinance.Application do
 
   use Application
 
+  require Logger
+
   @impl true
   def start(_type, _args) do
-    children = [
-      # Starts a worker by calling: Yfinance.Worker.start_link(arg)
-      # {Yfinance.Worker, arg}
-    ]
+    # Start the Pythonx runtime if it has not already been started
+    try do
+      Pythonx.uv_init(Yfinance.default_uv_init_def())
+    rescue
+      error in RuntimeError ->
+        Logger.info("Pythonx was not initialized: #{Exception.message(error)}")
+    end
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Yfinance.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link([], opts)
   end
 end
