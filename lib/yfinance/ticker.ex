@@ -14,7 +14,11 @@ defmodule Yfinance.Ticker do
                   ])
 
   @doc """
-  Get the OHLC history for a provided stock symbol.
+  Get the OHLCV history for a provided stock symbol given a start and end date.
+
+  ## Options
+
+    #{NimbleOptions.docs(@history_schema)}
   """
   def history(symbol, %Date{} = start_date, %Date{} = end_date, opts \\ []) do
     with :ok <- Utils.validate_opts(opts, @history_schema) do
@@ -55,6 +59,10 @@ defmodule Yfinance.Ticker do
 
       # Convert pandas DataFrame to Polars
       pl_df = pl.from_pandas(hist)
+
+      pl_df = pl_df.with_columns(
+        pl.col(pl.FLOAT_DTYPES).cast(pl.Decimal(scale=2))
+      )
 
       # Cast Date column to date type (removes time component)
       if "Date" in pl_df.columns:
