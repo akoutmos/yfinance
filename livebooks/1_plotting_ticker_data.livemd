@@ -10,11 +10,31 @@ Mix.install([
 
 ## Get Historical Data
 
-To get historical data for a stock from Yahoo! Finance®, you can
+To get historical data for a stock from Yahoo! Finance®, you can use the `Yfinance.Ticker` module and pass in the date range for which you are interested in:
 
 ```elixir
 {:ok, data_frame} =
-  Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -12), Date.utc_today())
+  Yfinance.Ticker.history(
+    "aapl",
+    Date.shift(Date.utc_today(), month: -36),
+    Date.utc_today()
+  )
+```
 
+Now that you have the time series price data in an `Explorer.DataFrame` struct, you can render the tabular data in Livebook using `Kino.DataTable`:
+
+```elixir
 Kino.DataTable.new(data_frame)
+```
+
+Lastly, you can plot the time series data using VegaLite:
+
+```elixir
+alias VegaLite, as: Vl
+
+Vl.new(width: 700, height: 400, title: "Apple Stock Price (6 Months)")
+|> Vl.data_from_values(data_frame)
+|> Vl.mark(:line)
+|> Vl.encode_field(:x, "Date", type: :temporal, title: "Date")
+|> Vl.encode_field(:y, "AAPL_Close", type: :quantitative, title: "Close Price ($)")
 ```
