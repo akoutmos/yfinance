@@ -1,6 +1,6 @@
 defmodule Yfinance.Ticker do
   @moduledoc """
-  Documentation for `Yfinance.Ticker`.
+  Placeholder
   """
 
   alias Explorer.DataFrame
@@ -61,7 +61,7 @@ defmodule Yfinance.Ticker do
       pl_df = pl.from_pandas(hist)
 
       pl_df = pl_df.with_columns(
-        pl.col(pl.FLOAT_DTYPES).cast(pl.Decimal(scale=2))
+        pl.col(pl.Float64).cast(pl.Decimal(scale=2))
       )
 
       # Cast Date column to date type (removes time component)
