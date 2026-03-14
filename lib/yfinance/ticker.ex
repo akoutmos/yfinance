@@ -9,6 +9,8 @@ defmodule Yfinance.Ticker do
   alias Yfinance.Error
   alias Yfinance.Utils
 
+  @type result :: {:ok, DataFrame.t()} | {:error, term()}
+
   @history_schema Utils.generate_schema([
                     {:boolean, :prepost, "Whether to include pre/post market data."},
                     {:boolean, :auto_adjust, "Whether to adjust OHLC for splits."},
@@ -16,30 +18,37 @@ defmodule Yfinance.Ticker do
                   ])
 
   @doc """
-  Get the OHLCV history for a provided stock symbol given a start and end date.
+  Get the OHLCV history for a provided stock symbol given a start and end date. The result is
+  an `Explorer.DataFrame` struct.
 
   ## Options
 
-    #{NimbleOptions.docs(@history_schema)}
+  #{NimbleOptions.docs(@history_schema)}
 
   ## Examples
 
-      iex> {:ok, data_frame} =
-      ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
-      iex> %Explorer.DataFrame{} = data_frame
+  iex> {:ok, data_frame} =
+  ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
+  iex> %Explorer.DataFrame{} = data_frame
 
-      iex> {:ok, data_frame} =
-      ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
-      iex> %Explorer.DataFrame{} = data_frame
+  iex> {:ok, data_frame} =
+  ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
+  iex> %Explorer.DataFrame{} = data_frame
 
-      iex> {:error, %Yfinance.Error{type: :option_error}} =
-      ...>   Yfinance.Ticker.history(
-      ...>     "aapl",
-      ...>     Date.shift(Date.utc_today(), month: -1),
-      ...>     Date.utc_today(),
-      ...>     actions: "BAD_INPUT"
-      ...>   )
+  iex> {:error, %Yfinance.Error{type: :option_error}} =
+  ...>   Yfinance.Ticker.history(
+  ...>     "aapl",
+  ...>     Date.shift(Date.utc_today(), month: -1),
+  ...>     Date.utc_today(),
+  ...>     actions: "BAD_INPUT"
+  ...>   )
   """
+  @spec history(
+          symbol :: String.t(),
+          state_date :: Date.t(),
+          end_date :: Date.t(),
+          opts :: keyword()
+        ) :: result
   def history(symbol, %Date{} = start_date, %Date{} = end_date, opts \\ []) do
     with :ok <- Utils.validate_opts(opts, @history_schema) do
       variables = %{
@@ -102,79 +111,88 @@ defmodule Yfinance.Ticker do
   end
 
   @doc """
-  Gets the income statement for a ticker.
-
-  Returns an Explorer DataFrame with financial data.
-
-  ## Options
-
-    * `:quarterly` - Get quarterly data instead of annual (default: false)
+  Get the income statement history for a provided stock symbol. The result is
+  an `Explorer.DataFrame` struct.
 
   ## Examples
 
-      {:ok, df} = YFinance.income_statement("AAPL")
-      {:ok, df} = YFinance.income_statement("MSFT", quarterly: true)
-
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.income_statement("aapl", :quarterly)
+      iex> %Explorer.DataFrame{} = data_frame
   """
-  def income_statement(symbol, opts \\ []) do
-    quarterly = Keyword.get(opts, :quarterly, false)
-    get_financial_statement(symbol, "income_stmt", quarterly)
+  @spec income_statement(symbol :: String.t(), frequency :: :yearly | :quarterly) :: result
+  def income_statement(symbol, frequency) do
+    get_financial_statement(symbol, :income_stmt, frequency)
   end
 
   @doc """
-  Gets the balance sheet for a ticker.
+  Get the balance sheet history for a provided stock symbol. The result is
+  an `Explorer.DataFrame` struct.
 
-  ## Options
+  ## Examples
 
-    * `:quarterly` - Get quarterly data instead of annual (default: false)
-
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.balance_sheet("aapl", :quarterly)
+      iex> %Explorer.DataFrame{} = data_frame
   """
-  def balance_sheet(symbol, opts \\ []) do
-    quarterly = Keyword.get(opts, :quarterly, false)
-    get_financial_statement(symbol, "balance_sheet", quarterly)
+  @spec balance_sheet(symbol :: String.t(), frequency :: :yearly | :quarterly) :: result
+  def balance_sheet(symbol, frequency) do
+    get_financial_statement(symbol, :balance_sheet, frequency)
   end
 
   @doc """
-  Gets the cash flow statement for a ticker.
+  Get the cash flow history for a provided stock symbol. The result is
+  an `Explorer.DataFrame` struct.
 
-  ## Options
+  ## Examples
 
-    * `:quarterly` - Get quarterly data instead of annual (default: false)
-
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.cash_flow("aapl", :quarterly)
+      iex> %Explorer.DataFrame{} = data_frame
   """
-  def cash_flow(symbol, opts \\ []) do
-    quarterly = Keyword.get(opts, :quarterly, false)
-    get_financial_statement(symbol, "cashflow", quarterly)
+  @spec cash_flow(symbol :: String.t(), frequency :: :yearly | :quarterly) :: result
+  def cash_flow(symbol, frequency) do
+    get_financial_statement(symbol, :cashflow, frequency)
   end
 
   # +--------------------------------------------+
   # |              Helper functions              |
   # +--------------------------------------------+
 
-  defp get_financial_statement(symbol, statement_type, quarterly) do
-    attr_name = if quarterly, do: "quarterly_#{statement_type}", else: statement_type
+  defp get_financial_statement(symbol, statement_type, frequency) do
+    attr =
+      case frequency do
+        :quarterly -> "quarterly_#{statement_type}"
+        :yearly -> statement_type
+      end
+
+    variables = %{
+      "symbol" => symbol,
+      "attr" => attr
+    }
 
     python_code = """
     import yfinance as yf
     import polars as pl
     import io
 
-    ticker = yf.Ticker('#{symbol}')
-    stmt = getattr(ticker, '#{attr_name}')
+    #{decode_function()}
 
-    if stmt is None or len(stmt) == 0:
-        pl_df = pl.DataFrame({})
-    else:
-        # Financial statements have dates as columns and items as rows
-        # Transpose to have dates as rows
-        df = stmt.T.reset_index()
-        df = df.rename(columns={'index': 'Date'})
-        # Normalize column names
-        df.columns = [str(col).replace(' ', '_') for col in df.columns]
-        pl_df = pl.from_pandas(df)
-        # Cast Date column to date type
-        if "Date" in pl_df.columns:
-            pl_df = pl_df.with_columns(pl.col("Date").cast(pl.Date))
+    ticker = yf.Ticker(decode(symbol))
+    stmt = getattr(ticker, decode(attr))
+
+    # Financial statements have dates as columns and items as rows
+    # Transpose to have dates as rows
+    df = stmt.T.reset_index()
+    df = df.rename(columns={'index': 'Date'})
+
+    # Normalize column names
+    df.columns = [str(col).replace(' ', '_') for col in df.columns]
+    pl_df = pl.from_pandas(df)
+
+    # Cast Date column to date type
+    if "Date" in pl_df.columns:
+        pl_df = pl_df.with_columns(pl.col("Date").cast(pl.Date))
 
     buffer = io.BytesIO()
     pl_df.write_ipc(buffer)
@@ -183,7 +201,7 @@ defmodule Yfinance.Ticker do
     ipc_bytes
     """
 
-    eval_and_load_arrow_ipc(python_code, %{})
+    eval_and_load_arrow_ipc(python_code, variables)
   end
 
   defp decode_function do

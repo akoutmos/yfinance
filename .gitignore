@@ -21,3 +21,6 @@ yfinance-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Dialyzer files
+/priv/plts/
