@@ -27,6 +27,18 @@ defmodule Yfinance.Ticker do
       iex> {:ok, data_frame} =
       ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
       iex> %Explorer.DataFrame{} = data_frame
+
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
+      iex> %Explorer.DataFrame{} = data_frame
+
+      iex> {:error, %Yfinance.Error{type: :option_error}} =
+      ...>   Yfinance.Ticker.history(
+      ...>     "aapl",
+      ...>     Date.shift(Date.utc_today(), month: -1),
+      ...>     Date.utc_today(),
+      ...>     actions: "BAD_INPUT"
+      ...>   )
   """
   def history(symbol, %Date{} = start_date, %Date{} = end_date, opts \\ []) do
     with :ok <- Utils.validate_opts(opts, @history_schema) do
@@ -87,6 +99,52 @@ defmodule Yfinance.Ticker do
 
       eval_and_load_arrow_ipc(python_code, variables)
     end
+  end
+
+  @doc """
+  Gets the income statement for a ticker.
+
+  Returns an Explorer DataFrame with financial data.
+
+  ## Options
+
+    * `:quarterly` - Get quarterly data instead of annual (default: false)
+
+  ## Examples
+
+      {:ok, df} = YFinance.income_statement("AAPL")
+      {:ok, df} = YFinance.income_statement("MSFT", quarterly: true)
+
+  """
+  def income_statement(symbol, opts \\ []) do
+    quarterly = Keyword.get(opts, :quarterly, false)
+    get_financial_statement(symbol, "income_stmt", quarterly)
+  end
+
+  @doc """
+  Gets the balance sheet for a ticker.
+
+  ## Options
+
+    * `:quarterly` - Get quarterly data instead of annual (default: false)
+
+  """
+  def balance_sheet(symbol, opts \\ []) do
+    quarterly = Keyword.get(opts, :quarterly, false)
+    get_financial_statement(symbol, "balance_sheet", quarterly)
+  end
+
+  @doc """
+  Gets the cash flow statement for a ticker.
+
+  ## Options
+
+    * `:quarterly` - Get quarterly data instead of annual (default: false)
+
+  """
+  def cash_flow(symbol, opts \\ []) do
+    quarterly = Keyword.get(opts, :quarterly, false)
+    get_financial_statement(symbol, "cashflow", quarterly)
   end
 
   # +--------------------------------------------+
