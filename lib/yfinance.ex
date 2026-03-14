@@ -15,7 +15,7 @@ defmodule Yfinance do
 
   @moduledoc """
   This Elixir library provides a wrapper around the [Python yfinance](https://github.com/ranaroussi/yfinance)
-  so that you can fetch stock price data from Yahoo! Finance.
+  so that you can fetch stock price data from Yahoo! Finance®.
 
   ## Setup
 
