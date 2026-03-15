@@ -1,24 +1,19 @@
-# Getting Started with Yfinance
+# Plotting Stock Financials with Yfinance
 
 ```elixir
 Mix.install([
-  {:yfinance, path: "/Users/akoutmos/Documents/opensource/yfinance"},
+  {:yfinance, "~> 0.1.0"},
   {:kino_vega_lite, "~> 0.1.10"},
   {:kino, "~> 0.12.0"}
 ])
 ```
 
-## Get Historical Data
+## Get Financial Statement Data
 
-To get historical data for a stock from Yahoo! Finance®, you can use the `Yfinance.Ticker` module and pass in the date range for which you are interested in:
+To get historical financial statement data for a stock from Yahoo! Finance®, you can use the `Yfinance.Ticker` module and pass in the stock that you are interested in along with the data frequency:
 
 ```elixir
-{:ok, data_frame} =
-  Yfinance.Ticker.history(
-    "aapl",
-    Date.shift(Date.utc_today(), month: -36),
-    Date.utc_today()
-  )
+{:ok, data_frame} = Yfinance.Ticker.balance_sheet("aapl", :quarterly)
 ```
 
 Now that you have the time series price data in an `Explorer.DataFrame` struct, you can render the tabular data in Livebook using `Kino.DataTable`:
@@ -30,11 +25,22 @@ Kino.DataTable.new(data_frame)
 Lastly, you can plot the time series data using VegaLite:
 
 ```elixir
+import Explorer.DataFrame
 alias VegaLite, as: Vl
 
-Vl.new(width: 700, height: 400, title: "Apple Stock Price (6 Months)")
-|> Vl.data_from_values(data_frame)
+plottable_data_frame =
+  data_frame
+  |> Explorer.DataFrame.select(["date", "net_debt", "total_assets"])
+  |> Explorer.DataFrame.pivot_longer(["net_debt", "total_assets"],
+    names_to: "series",
+    values_to: "value"
+  )
+  |> Explorer.DataFrame.to_rows()
+
+Vl.new(width: 700, height: 400, title: "Apple Financials")
+|> VegaLite.data_from_values(plottable_data_frame)
 |> Vl.mark(:line)
-|> Vl.encode_field(:x, "Date", type: :temporal, title: "Date")
-|> Vl.encode_field(:y, "AAPL_Close", type: :quantitative, title: "Close Price ($)")
+|> Vl.encode_field(:x, "date", type: :temporal, title: "Date")
+|> Vl.encode_field(:y, "value", type: :quantitative, title: "Dollar amount")
+|> VegaLite.encode_field(:color, "series", type: :nominal)
 ```

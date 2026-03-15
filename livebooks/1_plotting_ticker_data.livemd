@@ -1,8 +1,8 @@
-# Getting Started with Yfinance
+# Plotting Stock Price with Yfinance
 
 ```elixir
 Mix.install([
-  {:yfinance, path: "/Users/akoutmos/Documents/opensource/yfinance"},
+  {:yfinance, "~> 0.1.0"},
   {:kino_vega_lite, "~> 0.1.10"},
   {:kino, "~> 0.12.0"}
 ])
@@ -35,6 +35,52 @@ alias VegaLite, as: Vl
 Vl.new(width: 700, height: 400, title: "Apple Stock Price (6 Months)")
 |> Vl.data_from_values(data_frame)
 |> Vl.mark(:line)
-|> Vl.encode_field(:x, "Date", type: :temporal, title: "Date")
-|> Vl.encode_field(:y, "AAPL_Close", type: :quantitative, title: "Close Price ($)")
+|> Vl.encode_field(:x, "date", type: :temporal, title: "Date")
+|> Vl.encode_field(:y, "close", type: :quantitative, title: "Close Price ($)")
+```
+
+You can even plot a candle stick chart using VegaLite and the data that you retrieved:
+
+```elixir
+import Explorer.DataFrame
+
+{:ok, data_frame} =
+  Yfinance.Ticker.history(
+    "aapl",
+    Date.shift(Date.utc_today(), month: -4),
+    Date.utc_today()
+  )
+
+# Add color column for candlestick
+candle_stick_data_frame =
+  Explorer.DataFrame.mutate(data_frame,
+    color: Explorer.Series.less(col("close"), col("open"))
+  )
+
+open_close =
+  Vl.new()
+  |> Vl.mark(:rule, size: 1)
+  |> Vl.encode_field(:y, "low", type: :quantitative, scale: [zero: false], title: "Price")
+  |> Vl.encode_field(:y2, "high")
+  |> Vl.encode_field(:color, "color",
+    type: :nominal,
+    scale: [domain: [true, false], range: ["#e45756", "#54a24b"]],
+    legend: nil
+  )
+
+high_low =
+  Vl.new()
+  |> Vl.mark(:bar, size: 3)
+  |> Vl.encode_field(:y, "open", type: :quantitative)
+  |> Vl.encode_field(:y2, "close")
+  |> Vl.encode_field(:color, "color",
+    type: :nominal,
+    scale: [domain: [true, false], range: ["#e45756", "#54a24b"]],
+    legend: nil
+  )
+
+Vl.new(width: 700, height: 400, title: "AAPL Candlestick Chart (last 4 months)")
+|> Vl.data_from_values(candle_stick_data_frame)
+|> Vl.encode_field(:x, "date", type: :temporal, title: "Date")
+|> Vl.layers([open_close, high_low])
 ```

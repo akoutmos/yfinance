@@ -88,6 +88,7 @@ defmodule Yfinance.Ticker do
           hist.columns = [col[0] if col[1] == '' else f'{col[1]}_{col[0]}' for col in hist.columns.values]
 
       # Convert pandas DataFrame to Polars
+      hist.columns = [str(col).replace(' ', '_').lower().removeprefix(decode(symbol) + '_') for col in hist.columns]
       pl_df = pl.from_pandas(hist)
 
       pl_df = pl_df.with_columns(
@@ -187,7 +188,7 @@ defmodule Yfinance.Ticker do
     df = df.rename(columns={'index': 'Date'})
 
     # Normalize column names
-    df.columns = [str(col).replace(' ', '_') for col in df.columns]
+    df.columns = [str(col).replace(' ', '_').lower() for col in df.columns]
     pl_df = pl.from_pandas(df)
 
     # Cast Date column to date type
