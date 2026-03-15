@@ -27,21 +27,21 @@ defmodule Yfinance.Ticker do
 
   ## Examples
 
-  iex> {:ok, data_frame} =
-  ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
-  iex> %Explorer.DataFrame{} = data_frame
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
+      iex> %Explorer.DataFrame{} = data_frame
 
-  iex> {:ok, data_frame} =
-  ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
-  iex> %Explorer.DataFrame{} = data_frame
+      iex> {:ok, data_frame} =
+      ...>   Yfinance.Ticker.history("aapl", Date.shift(Date.utc_today(), month: -1), Date.utc_today())
+      iex> %Explorer.DataFrame{} = data_frame
 
-  iex> {:error, %Yfinance.Error{type: :option_error}} =
-  ...>   Yfinance.Ticker.history(
-  ...>     "aapl",
-  ...>     Date.shift(Date.utc_today(), month: -1),
-  ...>     Date.utc_today(),
-  ...>     actions: "BAD_INPUT"
-  ...>   )
+      iex> {:error, %Yfinance.Error{type: :option_error}} =
+      ...>   Yfinance.Ticker.history(
+      ...>     "aapl",
+      ...>     Date.shift(Date.utc_today(), month: -1),
+      ...>     Date.utc_today(),
+      ...>     actions: "BAD_INPUT"
+      ...>   )
   """
   @spec history(
           symbol :: String.t(),

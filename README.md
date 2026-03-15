@@ -121,7 +121,7 @@ iex(2)> Explorer.DataFrame.print(data_frame, limit: 10, limit_dots: :bottom)
 The `livebooks/` directory contains interactive [Livebook](https://livebook.dev) notebooks that demonstrate how to use
 the library along with [VegaLite](https://hexdocs.pm/vega_lite) for charting:
 
-| Notebook                                                                           | Description                        |
-| ---------------------------------------------------------------------------------- | ---------------------------------- |
-| [`1_plotting_ticker_data.livemd`](./livebooks/1_plotting_ticker_data.livemd)       | Plot basic ticker time series data |
-| [`2_plotting_ticker_financials.livemd`](./livebooks/1_plotting_ticker_data.livemd) | Plot basic ticker financials       |
+| Notebook                                                                                | Description                        |
+| --------------------------------------------------------------------------------------- | ---------------------------------- |
+| [`1_plotting_ticker_data.livemd`](./livebooks/1_plotting_ticker_data.livemd)            | Plot basic ticker time series data |
+| [`2_plotting_ticker_financials.livemd`](./livebooks/2_getting_ticker_financials.livemd) | Plot basic ticker financials       |
