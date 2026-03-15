@@ -23,7 +23,7 @@ defmodule Yfinance.Ticker do
 
   ## Options
 
-  #{NimbleOptions.docs(@history_schema)}
+    #{NimbleOptions.docs(@history_schema)}
 
   ## Examples
 
