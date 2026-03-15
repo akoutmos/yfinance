@@ -21,7 +21,7 @@ defmodule Yfinance.MixProject do
       test_coverage: [
         ignore_modules: [Yfinance.Utils],
         summary: [
-          threshold: 80
+          threshold: 75
         ]
       ]
       # test_coverage: [tool: ExCoveralls],

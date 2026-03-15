@@ -216,20 +216,18 @@ defmodule Yfinance.Ticker do
   end
 
   defp eval_and_load_arrow_ipc(python_code, variables) do
-    try do
-      {result, _globals} = Pythonx.eval(python_code, variables)
-      ipc_bytes = Pythonx.decode(result)
+    {result, _globals} = Pythonx.eval(python_code, variables)
+    ipc_bytes = Pythonx.decode(result)
 
-      case DataFrame.load_ipc(ipc_bytes) do
-        {:ok, data_frame} ->
-          {:ok, data_frame}
+    case DataFrame.load_ipc(ipc_bytes) do
+      {:ok, data_frame} ->
+        {:ok, data_frame}
 
-        {:error, reason} ->
-          {:error, Error.new(:python_error, "Failed to load IPC data: #{inspect(reason)}")}
-      end
-    rescue
-      error ->
-        {:error, Exception.message(error)}
+      {:error, reason} ->
+        {:error, Error.new(:python_error, "Failed to load IPC data: #{inspect(reason)}")}
     end
+  rescue
+    error ->
+      {:error, Exception.message(error)}
   end
 end
