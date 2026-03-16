@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  An Elixir wrapper for the [Python yfinance](https://github.com/ranaroussi/yfinance) library.
+  An Elixir wrapper for the <a href="https://github.com/ranaroussi/yfinance">Python yfinance</a> library.
 </p>
 
 <p align="center">
