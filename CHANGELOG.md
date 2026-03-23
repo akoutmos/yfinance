@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `YFinance.Ticker.history_max/1` and `YFinance.Ticker.history_max/2` functions
+- `Yfinance.Ticker.history_max/1` and `Yfinance.Ticker.history_max/2` functions
 
 ## [0.1.0] - 2026-03-14
 
