@@ -108,6 +108,21 @@ defmodule Yfinance.Ticker do
   end
 
   @doc """
+  Same as `history/2` except raise on error.
+  """
+  @spec history!(
+          symbol :: String.t(),
+          state_date :: Date.t(),
+          end_date :: Date.t(),
+          opts :: keyword()
+        ) :: DataFrame.t()
+  def history!(symbol, start_date, end_date, opts \\ []) do
+    symbol
+    |> history(start_date, end_date, opts)
+    |> unwrap_or_raise()
+  end
+
+  @doc """
   Get the entire OHLCV history for a provided stock symbol. The result is
   an `Explorer.DataFrame` struct.
 
@@ -191,6 +206,19 @@ defmodule Yfinance.Ticker do
   end
 
   @doc """
+  Same as `history_max/2` except raise on error.
+  """
+  @spec history_max!(
+          symbol :: String.t(),
+          opts :: keyword()
+        ) :: DataFrame.t()
+  def history_max!(symbol, opts \\ []) do
+    symbol
+    |> history_max(opts)
+    |> unwrap_or_raise()
+  end
+
+  @doc """
   Get the income statement history for a provided stock symbol. The result is
   an `Explorer.DataFrame` struct.
 
@@ -203,6 +231,17 @@ defmodule Yfinance.Ticker do
   @spec income_statement(symbol :: String.t(), frequency :: :yearly | :quarterly) :: result
   def income_statement(symbol, frequency) do
     get_financial_statement(symbol, :income_stmt, frequency)
+  end
+
+  @doc """
+  Same as `income_statement/2` except raise on error.
+  """
+  @spec income_statement!(symbol :: String.t(), frequency :: :yearly | :quarterly) ::
+          DataFrame.t()
+  def income_statement!(symbol, frequency) do
+    symbol
+    |> income_statement(frequency)
+    |> unwrap_or_raise()
   end
 
   @doc """
@@ -221,6 +260,16 @@ defmodule Yfinance.Ticker do
   end
 
   @doc """
+  Same as `balance_sheet/2` except raise on error.
+  """
+  @spec balance_sheet!(symbol :: String.t(), frequency :: :yearly | :quarterly) :: DataFrame.t()
+  def balance_sheet!(symbol, frequency) do
+    symbol
+    |> balance_sheet(frequency)
+    |> unwrap_or_raise()
+  end
+
+  @doc """
   Get the cash flow history for a provided stock symbol. The result is
   an `Explorer.DataFrame` struct.
 
@@ -233,6 +282,16 @@ defmodule Yfinance.Ticker do
   @spec cash_flow(symbol :: String.t(), frequency :: :yearly | :quarterly) :: result
   def cash_flow(symbol, frequency) do
     get_financial_statement(symbol, :cashflow, frequency)
+  end
+
+  @doc """
+  Same as `cash_flow/2` except raise on error.
+  """
+  @spec cash_flow!(symbol :: String.t(), frequency :: :yearly | :quarterly) :: DataFrame.t()
+  def cash_flow!(symbol, frequency) do
+    symbol
+    |> cash_flow(frequency)
+    |> unwrap_or_raise()
   end
 
   # +--------------------------------------------+
@@ -308,5 +367,13 @@ defmodule Yfinance.Ticker do
   rescue
     error ->
       {:error, Exception.message(error)}
+  end
+
+  defp unwrap_or_raise({:ok, result}) do
+    result
+  end
+
+  defp unwrap_or_raise({:error, error}) do
+    raise "Yfinance encountered an error: #{inspect(error)}"
   end
 end
