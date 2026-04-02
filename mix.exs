@@ -18,20 +18,7 @@ defmodule Yfinance.MixProject do
       dialyzer: [
         plt_file: {:no_warn, "priv/plts/project.plt"}
       ],
-      test_coverage: [
-        ignore_modules: [Yfinance.Utils],
-        summary: [
-          threshold: 75
-        ]
-      ]
-      # test_coverage: [tool: ExCoveralls],
-      # preferred_cli_env: [
-      #   coveralls: :test,
-      #   "coveralls.detail": :test,
-      #   "coveralls.post": :test,
-      #   "coveralls.html": :test,
-      #   "coveralls.cobertura": :test
-      # ]
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -39,6 +26,18 @@ defmodule Yfinance.MixProject do
     [
       extra_applications: [:logger],
       mod: {Yfinance.Application, []}
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 

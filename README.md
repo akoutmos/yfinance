@@ -39,7 +39,7 @@ To learn how you can analyze and visualize the financial markets using Livebook,
 a copy of our book:
 
 <p align="center">
-  <a href="https://financialanalytics.dev">
+  <a href="https://www.financialelixir.dev/">
     <img width="50%" src="guides/images/book_cover.png" alt="Financial Analytics Using Elixir book cover">
   </a>
 </p>
@@ -58,7 +58,7 @@ Add `yfinance` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:yfinance, "~> 0.1.0"}
+    {:yfinance, "~> 0.4.0"}
   ]
 end
 ```
