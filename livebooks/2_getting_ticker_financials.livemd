@@ -8,6 +8,20 @@ Mix.install([
 ])
 ```
 
+## Introduction
+
+Yahoo! Finance® is a great place to download financial data like stock ticker prices. While they don't offer an API from which you can download this data, there is a Python library that makes the same calls as their web app so that you can fetch the time series data. This library was written to allow readers of [Elixir For Finance](https://www.financialelixir.dev/) to collect, analyze and visualize economic data from Yahoo! Finance®, but it can be used outside the context of the book.
+
+To learn how you can analyze and visualize the financial markets using Livebook, Explorer, Scholar and Nx, be sure to pick up a copy of our book:
+
+<a target="_blank" href="https://elixirpatterns.dev">
+  <img
+    src="https://financial-analytics-elixir-landing.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcover.8c040087.png&w=1080&q=75"
+    alt="Elixir For Finance Book Cover"
+    width="350"
+  />
+</a>
+
 ## Get Financial Statement Data
 
 To get historical financial statement data for a stock from Yahoo! Finance®, you can use the `Yfinance.Ticker` module and pass in the stock that you are interested in along with the data frequency:

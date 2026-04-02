@@ -58,7 +58,7 @@ Add `yfinance` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:yfinance, "~> 0.4.0"}
+    {:yfinance, "~> 0.5.0"}
   ]
 end
 ```
