@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:yfinance, "~> 0.1.0"},
+  {:yfinance, "~> 0.5.0"},
   {:kino_vega_lite, "~> 0.1.10"},
   {:kino, "~> 0.12.0"}
 ])
@@ -14,7 +14,7 @@ Yahoo! Finance® is a great place to download financial data like stock ticker p
 
 To learn how you can analyze and visualize the financial markets using Livebook, Explorer, Scholar and Nx, be sure to pick up a copy of our book:
 
-<a target="_blank" href="https://elixirpatterns.dev">
+<a target="_blank" href="https://www.financialelixir.dev">
   <img
     src="https://financial-analytics-elixir-landing.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcover.8c040087.png&w=1080&q=75"
     alt="Elixir For Finance Book Cover"
