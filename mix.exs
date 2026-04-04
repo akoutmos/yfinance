@@ -44,7 +44,7 @@ defmodule Yfinance.MixProject do
   defp package do
     [
       name: "yfinance",
-      files: ~w(lib livebooks mix.exs README.md LICENSE CHANGELOG.md VERSION),
+      files: ~w(lib guides livebooks mix.exs README.md LICENSE CHANGELOG.md VERSION),
       licenses: ["MIT"],
       maintainers: ["Alex Koutmos"],
       links: %{
