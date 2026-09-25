@@ -94,7 +94,7 @@ defmodule Yfinance.TickerTest do
 
     test "should raise an error when invalid options are provided" do
       assert_raise CaseClauseError, ~r"no case clause matching", fn ->
-        Ticker.income_statement!("aapl", :bad_input)
+        Ticker.income_statement!("aapl", String.to_atom("bad_input"))
       end
     end
   end
@@ -128,6 +128,7 @@ defmodule Yfinance.TickerTest do
                "date",
                "finished_goods",
                "gains_losses_not_affecting_retained_earnings",
+               "goodwill_and_other_intangible_assets",
                "gross_ppe",
                "income_tax_payable",
                "inventory",
@@ -170,14 +171,13 @@ defmodule Yfinance.TickerTest do
                "total_non_current_assets",
                "total_non_current_liabilities_net_minority_interest",
                "total_tax_payable",
-               "tradeand_other_payables_non_current",
                "working_capital"
              ]
     end
 
     test "should raise an error when invalid options are provided" do
       assert_raise CaseClauseError, ~r"no case clause matching", fn ->
-        Ticker.balance_sheet!("aapl", :bad_input)
+        Ticker.balance_sheet!("aapl", String.to_atom("bad_input"))
       end
     end
   end
@@ -241,7 +241,7 @@ defmodule Yfinance.TickerTest do
 
     test "should raise an error when invalid options are provided" do
       assert_raise CaseClauseError, ~r"no case clause matching", fn ->
-        Ticker.cash_flow!("aapl", :bad_input)
+        Ticker.cash_flow!("aapl", String.to_atom("bad_input"))
       end
     end
   end
