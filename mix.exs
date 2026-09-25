@@ -9,7 +9,7 @@ defmodule Yfinance.MixProject do
       name: "YFinance",
       source_url: "https://github.com/akoutmos/yfinance",
       homepage_url: "https://hex.pm/packages/yfinance",
-      description: "An Elixir client for the Federal Reserve Economic Data API",
+      description: "An Elixir client for the Yahoo! Finance API",
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps(),
